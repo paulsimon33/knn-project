@@ -1,0 +1,12 @@
+First function for removing data :
+Here is my idea. We are not supposed to be "memory pigs" so we should do it in one go.
+
+Calculate the total number of points : num_total = number_lines * number_columns.
+Calculate the number of points to remove : num_remove = percentage / 100 * num_total
+I found a magic function : random.sample. We can call random.sample(range(num_total),num_remove).
+This will create a list with the positions we are going to delete.
+
+Iterate through the file, for each line :
+	Find the number of points to remove
+	Randomly choose which points to erase (if any)
+	Write it in the new file
