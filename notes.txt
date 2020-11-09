@@ -1,4 +1,12 @@
-First function for removing data :
+## 0) THE DATA :
+Which table are we using?
+What I've understood is that we should aggregate all the first columns of processed files, what do you think?
+
+
+
+
+
+## 1) REMOVE DATA :
 Here is my idea. We are not supposed to be "memory pigs" so we should do it in one go.
 
 Calculate the total number of points : num_total = number_lines * number_columns.
@@ -6,7 +14,45 @@ Calculate the number of points to remove : num_remove = percentage / 100 * num_t
 I found a magic function : random.sample. We can call random.sample(range(num_total),num_remove).
 This will create a list with the positions we are going to delete.
 
+
+# NAME OF THE FILE :
+erase.py
+
+
+# PSEUDO CODE FOR DELETING NUMBERS
+Randomly choose which points to erase
 Iterate through the file, for each line :
-	Find the number of points to remove
-	Randomly choose which points to erase (if any)
-	Write it in the new file
+	If there is any number to erase, do it
+	Write back in the new file
+
+
+# COMPLEXITY
+O(m*n) where m is the number of rows and n the number of columns
+
+
+# NOTES
+09/11 : Paul : The function is implemented in erase.py. The input file must be a file with a header (1st line) and with the column having the identifier, typically those found in the directory "E-GEOD-10590.processed.1". To what I've tried, it is working. It maybe needs some error handling
+
+
+
+
+
+
+## 2) IMPLEMENT K-NN :
+# NAME OF THE FILE :
+knn.py
+
+
+# PSEUDO CODE :
+a) A function for euclidian distance, nothing special.
+b) A function for weights used for computing the average.
+
+
+# COMPLEXITY
+O(m²*n²) is the worst case, ie if all rows are missing at least 1 number and if we compare all rows against all others for every imputation.
+
+
+# NOTES
+09/11 : Paul : Big question : KNN or SKNN (ref2) : do we modify our matrix so that the first imputed values are used for the imputation of the next ones or do we create a new matrix?
+2nd big question : How do choose our neighbours? Can we have neighbours with missing values (other that the one we are imputing) and if so, how do calculate the distance?
+
