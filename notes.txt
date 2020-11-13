@@ -44,15 +44,16 @@ knn.py
 
 
 # PSEUDO CODE :
-a) A function for euclidian distance, nothing special.
-b) A function for weights used for computing the average.
-
+a) A function to write a read the matrix from a file
+b) A function to write a matrix to a file
+c) A function for euclidian distance. It is adapted to our case to consider NAs.
+d) A function for weights used for computing the average.
+e) The knn function
 
 # COMPLEXITY
 O(m²*n²) is the worst case, ie if all rows are missing at least 1 number and if we compare all rows against all others for every imputation.
 
 
 # NOTES
-09/11 : Paul : Big question : KNN or SKNN (ref2) : do we modify our matrix so that the first imputed values are used for the imputation of the next ones or do we create a new matrix?
-2nd big question : How do choose our neighbours? Can we have neighbours with missing values (other that the one we are imputing) and if so, how do calculate the distance?
+13/11 : Paul : The function seems to work. Took 52 minutes for the test3.txt file (32800 * 8 matrix with 10%NA). Maybe we can enhance it by rounding numbers but for complexity I don't really know. For evaluation, we could try to use a smaller dataset (10 000 points instead of 32 800 would theoretically divide the running time by 10).
 

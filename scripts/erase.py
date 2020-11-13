@@ -65,7 +65,7 @@ def produce_NAs(file, percentage) :
     except IOError as error :
         print("Can't open file", error)
 
-produce_NAs("../../data/E-GEOD-10590.processed.1/GSM266996_sample_table.txt", 1)
+produce_NAs("../../data/E-GEOD-10590.processed.1/test3.txt", 10)
                 
                 
 
