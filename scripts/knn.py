@@ -7,6 +7,8 @@ Created on Mon Nov  9 17:21:38 2020
 """
 
 import math
+import copy
+import time
 
 def read_matrix(file) :
     """
@@ -142,6 +144,7 @@ def knn(matrix, k) :
         
         # Else, find the neighbours
         else :
+            new_row = copy.deepcopy(row)
             neighbour_dist_list = []
             for neighbour in matrix[1:] :
                 if "NA" not in neighbour :
@@ -149,19 +152,24 @@ def knn(matrix, k) :
             neighbour_dist_list.sort(key = lambda x: x[1])
             nearest_neighbours = neighbour_dist_list[:k]
             weight_list = weights([nei[1] for nei in nearest_neighbours])
-            # print("a", weight_list)
             
             # Impute the missing values
             for missing_pos in NA_pos_list :
                 s = 0
                 for neighbour_pos in range(k) :
                     s += weight_list[neighbour_pos] * float(nearest_neighbours[neighbour_pos][0][missing_pos])
-                row[missing_pos] = s
+                new_row[missing_pos] = s
+            new_matrix.append(new_row)
 
-    # return(matrix)
+    return(new_matrix)
 
 matrix = read_matrix("../../data/E-GEOD-10590.processed.1/test3.txt_10_modified")
-modified_matrix = knn(matrix,10)
-write_matrix(matrix, "../../data/E-GEOD-10590.processed.1/test3.txt_10_modified_imputed")
+
+start = time.time()
+modified_matrix = knn(matrix,12)
+end = time.time()
+print("Time:", end - start)
+
+write_matrix(modified_matrix, "../../data/E-GEOD-10590.processed.1/test3_10m_imputed_12n.txt")
         
                 

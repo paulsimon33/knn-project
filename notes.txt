@@ -56,4 +56,6 @@ O(m²*n²) is the worst case, ie if all rows are missing at least 1 number and i
 
 # NOTES
 13/11 : Paul : The function seems to work. Took 52 minutes for the test3.txt file (32800 * 8 matrix with 10%NA). Maybe we can enhance it by rounding numbers but for complexity I don't really know. For evaluation, we could try to use a smaller dataset (10 000 points instead of 32 800 would theoretically divide the running time by 10).
+22/11 : Paul : round numbers in the KNN
+22/11 : After changing an error in the code, it now runs in 32min for k = 12 and missing = 10%
 
