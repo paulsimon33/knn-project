@@ -13,23 +13,26 @@ import time
 def read_matrix(file) :
     """
     Read a tab separated file to create a list of lists.
-
     Parameters
     ----------
     file : str
         Name of the file containing the matrix.
-
     Returns
     -------
     matrix : list of lists
         The resulting matrix.
-
     """
     matrix = []
     
     with open(file,"r") as infile :
         for line in infile :
-            matrix.append(line[:-1].split("\t"))
+            linelist = line[:-1].split("\t")
+            for i in range(1,len(linelist)):
+                try:
+                    linelist[i] = float(linelist[i])
+                except ValueError:
+                    pass
+            matrix.append(linelist)
     return(matrix)
 
 
@@ -163,13 +166,80 @@ def knn(matrix, k) :
 
     return(new_matrix)
 
+def knn_mikkel(matrix, k) :
+    new_matrix = []
+    
+    for row_idx in range(1,len(matrix)):
+        
+        # print(row_idx)
+        
+        row = copy.deepcopy(matrix[row_idx])
+        NA_idx_list = [i for i in range(1,len(row)) if row[i] == 'NA']
+        number_idx_list = [i for i in range(1,len(row)) if row[i] != 'NA']
+        
+        
+        last_distance_dict = dict()
+        distance_dict = dict()
+        
+        for NA_idx in NA_idx_list:
+            
+            last_distance_dict.update(distance_dict)
+            distance_dict = dict()
+              
+            for train_row_idx in range(1,len(matrix)):
+                train_row = matrix[train_row_idx]
+                
+                # print('T', train_row_idx)
+                
+                if train_row[NA_idx] != 'NA':
+                    
+                    no_NA_flag = True
+                    for number_idx in number_idx_list:
+                        if train_row[number_idx] == 'NA':
+                            no_NA_flag = False
+                            break
+                        
+                    if no_NA_flag == True:
+                        
+                        if train_row_idx in last_distance_dict:
+                            distance = last_distance_dict[train_row_idx]
+                            
+                        else:
+                            distance = 0
+                            for number_idx in number_idx_list:
+                                distance += (row[number_idx] - train_row[number_idx]) ** 2
+                            distance = math.sqrt(distance)
+                            
+                        distance_dict[train_row_idx] = distance
+            
+            dist_list = []
+            values_list = []
+            for neighbor in (sorted(distance_dict, key=distance_dict.get)[0:k]) :
+                values_list.append(matrix[neighbor][NA_idx])
+                dist_list.append(distance_dict[neighbor])
+            weight_list = weights(dist_list)
+
+            
+            new_value = 0
+            for i in range(k) :
+                new_value += weight_list[i] * values_list[i]
+            row[NA_idx] = new_value
+            
+        new_matrix.append(row)
+    
+    return(new_matrix)
+        
+                
+
 matrix = read_matrix("../../data/E-GEOD-10590.processed.1/test3.txt_10_modified")
 
 start = time.time()
-modified_matrix = knn(matrix,12)
+new_matrix = knn_mikkel(matrix, 10)
+#modified_matrix = knn(matrix,12)
+
 end = time.time()
 print("Time:", end - start)
 
-write_matrix(modified_matrix, "../../data/E-GEOD-10590.processed.1/test3_10m_imputed_12n.txt")
+write_matrix(new_matrix, "../../data/E-GEOD-10590.processed.1/test3_10p_10n_mikkel.txt")
         
                 
