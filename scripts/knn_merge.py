@@ -10,7 +10,7 @@ import math
 import copy
 import time
 import random
-# random.seed(0)
+random.seed(0)
 
 
 def parse_arguments(arg):
@@ -18,28 +18,31 @@ def parse_arguments(arg):
     error_rate = None
     k = None
     
+    # Search for arguments
     for i in range(1,len(arg)):
-        if sys.argv[i] == '-h':
+        # Display help
+        if sys.argv[i] == ('-h' or '--help'):
             print('Help')
             sys.exit(1)
-            
-        if sys.argv[i] == '-f':
+        # Search for filenmae
+        elif sys.argv[i] == '-f':
             filename = sys.argv[i+1]
-            
-        if sys.argv[i] == '-e':
+        # Search for error rate
+        elif sys.argv[i] == '-e':
             try:
                 error_rate = int(sys.argv[i+1])
             except ValueError as error:
                 print('Error rate must be an integer -', error)
                 sys.exit(1)
-                
-        if sys.argv[i] == '-k':
+        # Search for k
+        elif sys.argv[i] == '-k':
             try:
                 k = int(sys.argv[i+1])
             except ValueError as error:
                 print('k must be an integer -', error)
                 sys.exit(1)
-            
+                
+    # Raise error if arguments are missing        
     if filename == None: raise Exception('Filename not provided')
     if error_rate == None: raise Exception('Error rate not provided')
     if k == None: raise Exception('k not provided')
@@ -81,27 +84,16 @@ def read_matrix(filename):
         for i in range(1,len(row_list)):
             # Raise error if value is not NA or number
             if row_list[i] != 'NA':
-                # Convert numbers to float
-                row_list[i] = float(row_list[i])
+                try:
+                    # Convert numbers to float
+                    row_list[i] = float(row_list[i])
+                except ValueError as error:
+                    print('Invalid data - Data must be number or NA -', error)
+                    sys.exit(1)
         # Add row to matrix
         matrix.append(row_list)
         line = infile.readline()
     infile.close()
-    return(matrix)
-        # first_line = True
-        # for line in infile:
-        #     linelist = line[:-1].split("\t")
-        #     if first_line == True:
-        #         first_line == False
-        #     else:
-        #         for i in range(1,len(linelist)):
-        #             if linelist[i] != 'NA':
-        #                 linelist[i] = float(linelist[i])
-        #         # try:
-        #         #     linelist[i] = float(linelist[i])
-        #         # except ValueError:
-        #         #     pass
-        #     matrix.append(linelist)
     return(matrix)
 
 
@@ -199,21 +191,21 @@ def weights(distance_lst):
 
 
 def knn(matrix, k):
-    
-
     """
-    
+    Take a matrix with NAs and replace them with imputed data found by the
+    k - Nearest Neighbours (k-NN) method.
 
     Parameters
     ----------
-    matrix : TYPE
-        DESCRIPTION.
-    k : TYPE
-        DESCRIPTION.
+    matrix : list of lists
+        Matrix with NAs.
+    k : int
+        Number of neighbours to consider.
 
     Returns
     -------
-    None.
+    new_matrix : list of lists
+     	Matrix with NA replaced by imputed numbers.
 
     """
     # Create output matrix with header
@@ -225,7 +217,7 @@ def knn(matrix, k):
         # Find positions of NAs and values
         NA_idx_list = [i for i in range(1,len(row)) if row[i] == 'NA']
         value_idx_list = [i for i in range(1,len(row)) if row[i] != 'NA']
-        # Create empty dictionaries for distances        
+        # Initialize distance dictionaries        
         row_distance_dict = dict()
         distance_dict = dict()
         
@@ -233,6 +225,7 @@ def knn(matrix, k):
         for NA_idx in NA_idx_list:
             # Update row distance dictionary with distances from last iteration
             row_distance_dict.update(distance_dict)
+            # Create new distance dictionaty for this NA
             distance_dict = dict()
             
             # Find distances to all valid rows
@@ -262,6 +255,9 @@ def knn(matrix, k):
             
             
             # Find k nearest neighbors
+            
+            if k > len(distance_dict):
+                raise Exception('k larger than the number of neighbors')
             value_list = []
             distance_list = []
             for neighbor in (sorted(distance_dict, key=distance_dict.get)[0:k]):
@@ -303,14 +299,15 @@ NA_matrix = produce_NAs(matrix, error_rate)
 knn_matrix = knn(NA_matrix, k)
 
 # Print kNN matrix to output file
-write_matrix(knn_matrix, filename + '.knn')
+write_matrix(knn_matrix, filename + '_k' + str(k) + '_e' + str(error_rate) + '.txt')
 
 # Record end time
 end_time = time.time()
 elapsed_time = (end_time - start_time) / 60
 
 # Display complete message
-print('kNN matrix created from', filename, '- Runtime:', elapsed_time, 'min')
+print('kNN matrix created for', filename)
+print('k =', k, ' --  Error rate =', str(error_rate) + '%', ' --  Runtime =', '{:.2f}'.format(elapsed_time), 'min')
 
 
 

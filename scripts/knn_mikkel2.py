@@ -66,65 +66,108 @@ def read_matrix(file) :
     return(matrix)
 
 matrix = read_matrix('test3.txt_10_modified')
-
+k = 10
 
          
 
 start_time = time.time()
 
-def knn_mikkel(matrix, k) :
-    for row_idx in range(1,1000):
+# def knn_mikkel(matrix, k) :
+#     for row_idx in range(1,1000):
         
-        # print(row_idx)
+#         # print(row_idx)
         
-        row = matrix[row_idx]
-        NA_idx_list = [i for i in range(1,len(row)) if row[i] == 'NA']
-        number_idx_list = [i for i in range(1,len(row)) if row[i] != 'NA']
+#         row = matrix[row_idx]
+#         NA_idx_list = [i for i in range(1,len(row)) if row[i] == 'NA']
+#         number_idx_list = [i for i in range(1,len(row)) if row[i] != 'NA']
         
-        last_distance_dict = dict()
-        distance_dict = dict()
+#         last_distance_dict = dict()
+#         distance_dict = dict()
         
-        for NA_idx in NA_idx_list:
+#         for NA_idx in NA_idx_list:
             
-            last_distance_dict.update(distance_dict)
-            distance_dict = dict()
+#             last_distance_dict.update(distance_dict)
+#             distance_dict = dict()
               
-            for train_row_idx in range(1,len(matrix)):
-                train_row = matrix[train_row_idx]
+#             for train_row_idx in range(1,len(matrix)):
+#                 train_row = matrix[train_row_idx]
                 
-                # print('T', train_row_idx)
+#                 # print('T', train_row_idx)
                 
-                if train_row[NA_idx] != 'NA':
+#                 if train_row[NA_idx] != 'NA':
                     
-                    no_NA_flag = True
-                    for number_idx in number_idx_list:
-                        if train_row[number_idx] == 'NA':
-                            no_NA_flag = False
-                            break
+#                     no_NA_flag = True
+#                     for number_idx in number_idx_list:
+#                         if train_row[number_idx] == 'NA':
+#                             no_NA_flag = False
+#                             break
                         
-                    if no_NA_flag == True:
+#                     if no_NA_flag == True:
                         
-                        if train_row_idx in last_distance_dict:
-                            distance = last_distance_dict[train_row_idx]
+#                         if train_row_idx in last_distance_dict:
+#                             distance = last_distance_dict[train_row_idx]
                             
-                        else:
-                            distance = 0
-                            for number_idx in number_idx_list:
-                                distance += (row[number_idx] - train_row[number_idx]) ** 2
-                            distance = distance ** 0.5
+#                         else:
+#                             distance = 0
+#                             for number_idx in number_idx_list:
+#                                 distance += (row[number_idx] - train_row[number_idx]) ** 2
+#                             distance = distance ** 0.5
                             
-                        distance_dict[train_row_idx] = distance
+#                         distance_dict[train_row_idx] = distance
             
-            dist_list = []
+#             dist_list = []
+#             values_list = []
+#             for neighbor in sorted(distance_dict, key=distance_dict.get, reverse = True)[0:k] :
+#                 values_list += matrix[neighbor][NA_idx]
+#                 dist_list += distance_dict[neighbor]
+#             weight_list = weigths(dist_list)
+            
+#             new_value = 0
+#             for i in range(k) :
+#                 new_value += weight_list[i] * values_list[i]
+
+
+
+for row_idx in range(1,1000):
+    row = matrix[row_idx]
+    # List of NA indicies in row
+    NA_list = [i for i in range(1,len(row)) if row[i] == 'NA']
+    # List of number indicies in row
+    number_list = [i for i in range(1,len(row)) if row[i] != 'NA']
+    # Create empty distance dictionary
+    distance_dict = dict()
+    if len(NA_list) > 0:
+        for train_row_idx in range(1,len(matrix)):
+            train_row = matrix[train_row_idx]
+            distance = None
+            for NA_idx in NA_list:
+                if train_row[NA_idx] != 'NA':
+                    distance = 0
+                    break
+            if distance != None:
+                for number_idx in number_list:
+                    if train_row[number_idx] != 'NA':
+                        distance += (row[number_idx] - train_row[number_idx]) ** 2
+                    else:
+                        distance = None
+                        break
+                if distance != None:
+                    distance_dict[train_row_idx] = distance ** 0.5
+        for NA_idx in NA_list:
             values_list = []
-            for neighbor in sorted(distance_dict, key=distance_dict.get, reverse = True)[0:k] :
-                values_list += matrix[neighbor][NA_idx]
-                dist_list += distance_dict[neighbor]
-            weight_list = weigths(dist_list)
-            
-            new_value = 0
-            for i in range(k) :
-                new_value += weight_list[i] * values_list[i]
+            dist_list = []
+            i = 0
+            while len(values_list) < k:
+                neighbor = (sorted(distance_dict, key=distance_dict.get)[i])
+                value = matrix[neighbor][NA_idx]
+                if value != 'NA':
+                    values_list.append(value)
+                    dist_list.append(distance_dict[neighbor])
+                i += 1
+                
+                    
+                
+    
 
             
                     

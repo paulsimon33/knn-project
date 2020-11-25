@@ -1,0 +1,6 @@
+	ex 1	ex 2	ex 3	ex 4
+gen 1	63	96	53	95
+gen 2	82	NA	18	NA
+gen 3	63	46	91	12
+gen 4	23	NA	59	21
+gen 5	36	NA	NA	56
