@@ -7,7 +7,7 @@ Created on Sun Nov 22 14:34:49 2020
 
 
 Script for analysing the result obtained with our implementation of k-NN.
-It draws plots RMS = f(k) and time = f(k) for several values of percentages of
+It draws plot RMS = f(k) for several values of percentages of
 missing data.
 NOTE : This full script runs in approximately 2 hours and 40 minutes.
 """
@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 from knn_functions import *
 import time
 
-def rms_error(reference_matrix, imputed_matrix, per_missing) :
+def rms_error(reference_matrix, imputed_matrix, per_missing):
     """
     Compute the RMS error between the imputed matrix and the reference matrix.
     
@@ -41,17 +41,17 @@ def rms_error(reference_matrix, imputed_matrix, per_missing) :
     rms = 0.
     
     # Error handling if the dimensions of both matrices don't match
-    if len(reference_matrix) != len(imputed_matrix) :
+    if len(reference_matrix) != len(imputed_matrix):
         raise ValueError("Not the same number of row in each matrix")
-    else :
-        for i in range(1,len(reference_matrix)) :
-            if len(reference_matrix[i]) != len(imputed_matrix[i]) :
+    else:
+        for i in range(1,len(reference_matrix)):
+            if len(reference_matrix[i]) != len(imputed_matrix[i]):
                 raise ValueError("Not the same number of columns")
             
             # Calculation of the RMS
             else :
-                 for j in range(1, len(reference_matrix[i])) :
-                     if reference_matrix[i][j] != imputed_matrix[i][j] :
+                 for j in range(1, len(reference_matrix[i])):
+                     if reference_matrix[i][j] != imputed_matrix[i][j]:
                          rms += (reference_matrix[i][j] - imputed_matrix[i][j]) ** 2
     
     # Calculation of the number of missing value
@@ -69,7 +69,7 @@ percentages = [5, 10, 15, 20, 25, 50]
 # And the matrix that will contain [k, per_missing, rms, time]
 rms_time_matrix = []
 
-# Choosing a reference matrix
+# Choose a reference matrix
 matrix_ref = read_matrix("../final_data/test_10000.txt")
 
 # For each percentage, simulate missing points
@@ -80,7 +80,11 @@ for per in percentages :
     for k in k_list :
         start = time.time()
         new_matrix = knn(matrix_na, k)
-        rms = rms_error(matrix_ref, new_matrix, per)
+        try :
+            rms = rms_error(matrix_ref, new_matrix, per)
+        except ValueError as err :
+            print(err)
+            sys.exit(1)
         t = time.time() - start
         
         rms_time_matrix.append([k,per,rms,t])
@@ -109,8 +113,7 @@ for j in range(5):
         rms_list.append(float(rms_time_matrix[len(k_list)*j+i][2]))    
     plt.plot(k_list, rms_list, 'o', label = "% missing ="+ str(rms_time_matrix[len(k_list)*j][1]))
 
-# The value of 50% is managed differently because it produces an error
-# for k = 20.
+# The value of 50% is managed differently because it produces an error for k = 20.
 rms_list = []
 for i in range(13) :
     rms_list.append(float(rms_time_matrix[5*len(k_list)+i][2]))
@@ -125,24 +128,29 @@ fig.set_size_inches(18.5, 10.5)
 fig.savefig('RMS_against_k.png', dpi=100)
 
 
-# Second plot, time for computation against k for different missing percentages.
-# The process is the same but with the time instead of the RMS.
-plt.figure()
-time_list = []
-for j in range(5):
-    time_list = []
-    for i in range(len(k_list)) :
-        time_list.append(float(rms_time_matrix[len(k_list)*j+i][3]))    
-    plt.plot(k_list, time_list, 'o', label = "% missing ="+ str(rms_time_matrix[len(k_list)*j][1]))
 
-time_list = []
-for i in range(13) :
-    time_list.append(float(rms_time_matrix[5*len(k_list)+i][3]))
-plt.plot(k_list[:13], time_list, 'o', label = "% missing ="+ str(rms_time_matrix[len(k_list)*5][1]))
 
-plt.xlabel("k")
-plt.ylabel("time (s)")
-plt.legend()
-fig = plt.gcf()
-fig.set_size_inches(18.5, 10.5)
-fig.savefig('time_against_k.png', dpi=100)
+# NOTE : At first, a plot time = f(k) was plotted but we decided not to include
+# it in our results. The code below is creating such a plot if you are interested.
+
+# # Second plot, time for computation against k for different missing percentages.
+# # The process is the same but with the time instead of the RMS.
+# plt.figure()
+# time_list = []
+# for j in range(5):
+#     time_list = []
+#     for i in range(len(k_list)) :
+#         time_list.append(float(rms_time_matrix[len(k_list)*j+i][3]))    
+#     plt.plot(k_list, time_list, 'o', label = "% missing ="+ str(rms_time_matrix[len(k_list)*j][1]))
+
+# time_list = []
+# for i in range(13) :
+#     time_list.append(float(rms_time_matrix[5*len(k_list)+i][3]))
+# plt.plot(k_list[:13], time_list, 'o', label = "% missing ="+ str(rms_time_matrix[len(k_list)*5][1]))
+
+# plt.xlabel("k")
+# plt.ylabel("time (s)")
+# plt.legend()
+# fig = plt.gcf()
+# fig.set_size_inches(18.5, 10.5)
+# fig.savefig('time_against_k.png', dpi=100)

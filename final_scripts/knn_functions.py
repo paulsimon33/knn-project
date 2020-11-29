@@ -5,7 +5,7 @@ Created on Mon Nov  9 17:21:38 2020
 @author: paul and mikkel
 
 Script containing functions for performing the deletion of points in a dataset
-and then applying the k-NN algorithms
+and then applying the k-NN algorithms.
 """
 import sys
 import copy
@@ -16,6 +16,26 @@ random.seed(1)
 
 
 def parse_arguments(arg):
+    """
+    Function for parsing the argument from the command line to be used in
+    the script.
+
+    Parameters
+    ----------
+    arg: list
+        List coming from sys.argv.
+
+    Returns
+    -------
+    filename : string
+        The name of the file containing the matrix.
+    error_rate : int
+        The percentage of missing values one wants to produce.
+    k : int
+        The k value for the k-NN algorithm.
+
+    """
+    
     filename = None
     error_rate = None
     k = None
@@ -55,7 +75,7 @@ def parse_arguments(arg):
 def read_matrix(filename):
     """
     Read a tab separated file to create a list of lists. First row is reserved
-    for headers and first columns if reserved for an identifier. Only numbers
+    for headers and first column is reserved for an identifier. Only numbers
     and NAs are accepted on the other postions.
     
     Parameters
@@ -100,7 +120,7 @@ def read_matrix(filename):
 
 def write_matrix(matrix, filename):
     """
-    Write a matrix (list of lists) in the given file
+    Write a matrix (list of lists) in the given file.
     Parameters
     ----------
     matrix : list of lists
@@ -135,13 +155,16 @@ def produce_NAs(matrix, percentage):
     NA_matrix : lists of lists
         Matrix with NAs.
     """
+    
+    # Deep copy of the matrix to keep both of them in memory
     NA_matrix = copy.deepcopy(matrix)
     
-    # Generate numbers for positions to delete
+    # Calculate the total length of the dataset
     number_rows = len(matrix)-1
     number_cols = len(matrix[0])-1
-    
     total_numbers = number_rows * number_cols
+    
+    # Generate numbers for positions to delete
     quantity_deleted = int(percentage/100 * total_numbers)
     positions_deleted = set(random.sample(range(total_numbers),quantity_deleted))
     
@@ -159,6 +182,7 @@ def weights(distance_lst):
     From a list of distances, return a list of weights for each position.
     This function is the implementation of (1) of (Kim et al. 2004) and is used
     for computing the weighted average.
+    
     Parameters
     ----------
     distance_lst : list
@@ -174,15 +198,15 @@ def weights(distance_lst):
     
     # If the first distance is 0, then we only use 1 neighbor.
     # The first weight is 1, others are 0.
-    if distance_lst[0] == 0 :
+    if distance_lst[0] == 0:
         weight_lst.append(1)
         weight_lst += [0 for i in range(len(distance_lst)-1)]
         
     # Otherwise, we append weigths in the list
-    else :
-        for dist in distance_lst :
+    else:
+        for dist in distance_lst:
             denominator += 1/dist
-        for dist in distance_lst :
+        for dist in distance_lst:
             weight_lst.append(1/dist/denominator)
     return(weight_lst)
 
@@ -190,18 +214,20 @@ def weights(distance_lst):
 def knn(matrix, k):
     """
     Take a matrix with NAs and replace them with imputed data found by the
-    k - Nearest Neighbours (k-NN) method.
+    k - Nearest Neighbors (k-NN) method.
+    
     Parameters
     ----------
     matrix : list of lists
         Matrix with NAs.
     k : int
-        Number of neighbours to consider.
+        Number of neighbors to consider.
     Returns
     -------
     new_matrix : list of lists
      	Matrix with NA replaced by imputed numbers.
     """
+    
     # Create output matrix with header
     new_matrix = [matrix[0]]
     

@@ -5,7 +5,7 @@ Created on Thu Nov 26 16:17:22 2020
 
 @author: paul and mikkel
 
-Main script, used to call all the functions definied in knn_functions.py
+Main script, used to call all the functions defined in knn_functions.py
 """
 
 import time
