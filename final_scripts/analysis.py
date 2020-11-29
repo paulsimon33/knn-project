@@ -107,17 +107,12 @@ with open("rms_time_matrix.txt", "w") as infile :
 
 # First, plot the RMS against k for different values of missing percentages.
 plt.figure()
-for j in range(5):
+for j in range(len(percentages)):
     rms_list = []
     for i in range(len(k_list)) :
         rms_list.append(float(rms_time_matrix[len(k_list)*j+i][2]))    
     plt.plot(k_list, rms_list, 'o', label = "% missing ="+ str(rms_time_matrix[len(k_list)*j][1]))
 
-# The value of 50% is managed differently because it produces an error for k = 20.
-rms_list = []
-for i in range(13) :
-    rms_list.append(float(rms_time_matrix[5*len(k_list)+i][2]))
-plt.plot(k_list[:13], rms_list, 'o', label = "% missing ="+ str(rms_time_matrix[len(k_list)*5][1]))
 
 # Some plotting parameters and save it as a PNG file
 plt.xlabel("k")

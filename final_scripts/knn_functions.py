@@ -274,10 +274,12 @@ def knn(matrix, k):
             
             # Find k nearest neighbors
             if k > len(distance_dict):
-                raise Exception('k larger than the number of neighbors')
+                k_temp = len(distance_dict)
+            else :
+                k_temp = k
             value_list = []
             distance_list = []
-            for neighbor in (sorted(distance_dict, key=distance_dict.get)[0:k]):
+            for neighbor in (sorted(distance_dict, key=distance_dict.get)[0:k_temp]):
                 value_list.append(matrix[neighbor][NA_idx])
                 distance_list.append(distance_dict[neighbor])
             # Calculate weights
@@ -285,7 +287,7 @@ def knn(matrix, k):
             
             # Calculate missing value
             new_value = 0
-            for i in range(k):
+            for i in range(k_temp):
                 new_value += weight_list[i] * value_list[i]
             row[NA_idx] = new_value
         
