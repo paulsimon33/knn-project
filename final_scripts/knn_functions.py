@@ -19,12 +19,10 @@ def parse_arguments(arg):
     """
     Function for parsing the argument from the command line to be used in
     the script.
-
     Parameters
     ----------
     arg: list
-        List coming from sys.argv.
-
+        List coming from arg.
     Returns
     -------
     filename : string
@@ -33,7 +31,6 @@ def parse_arguments(arg):
         The percentage of missing values one wants to produce.
     k : int
         The k value for the k-NN algorithm.
-
     """
     
     filename = None
@@ -41,33 +38,50 @@ def parse_arguments(arg):
     k = None
     
     # Search for arguments
-    for i in range(1,len(arg)):
+    for i in range(len(arg)):
         # Display help
-        if sys.argv[i] == ('-h' or '--help'):
-            print('Help')
-            sys.exit(1)
+        if arg[i] == '-h' or arg[i] == '--help':
+            print('The program uses the kNN method to calculate missing values.')
+            print('The input arguments:')
+            print('   -f : filename')
+            print('   -e : error rate')
+            print('   -k : number of neighbors')
+            print('The file should contain a data matrix, first row must be used')
+            print('for headers and first column must be used for identifiers.')
+            print("The data matrix must only contain numbers and NA's")
+            sys.exit(0)
         # Search for filenmae
-        elif sys.argv[i] == '-f':
-            filename = sys.argv[i+1]
+        elif arg[i] == '-f':
+            try:
+                filename = arg[i+1]
+            except IndexError as error:
+                print('Invalid arguments')
+                sys.exit(0)
         # Search for error rate
-        elif sys.argv[i] == '-e':
+        elif arg[i] == '-e':
             try:
-                error_rate = int(sys.argv[i+1])
+                error_rate = int(arg[i+1])
             except ValueError as error:
-                print('Error rate must be an integer -', error)
-                sys.exit(1)
+                print('Error rate must be an integer')
+                sys.exit(0)
+            except IndexError as error:
+                print('Invalid arguments')
+                sys.exit(0)
         # Search for k
-        elif sys.argv[i] == '-k':
+        elif arg[i] == '-k':
             try:
-                k = int(sys.argv[i+1])
+                k = int(arg[i+1])
             except ValueError as error:
-                print('k must be an integer -', error)
-                sys.exit(1)
+                print('k must be an integer')
+                sys.exit(0)
+            except IndexError as error:
+                print('Invalid arguments')
+                sys.exit(0)
                 
     # Raise error if arguments are missing        
-    if filename == None: raise Exception('Filename not provided')
-    if error_rate == None: raise Exception('Error rate not provided')
-    if k == None: raise Exception('k not provided')
+    if filename == None: raise Exception('Filename is not provided')
+    if error_rate == None: raise Exception('Error rate is not provided')
+    if k == None: raise Exception('k is not provided')
     
     return(filename, error_rate, k)
 
